@@ -19,17 +19,29 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(bodyParser.json());
 
+// checking
+app.use(bodyParser.urlencoded({ extended: true }));
+
+let auth = require("./auth")(app);
+
+const passport = require("passport");
+require("./passport");
+
 // Gets the list of data about ALL Movies
-app.get("/movies", (req, res) => {
-  Movies.find()
-    .then((movies) => {
-      res.status(200).json(movies);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send("Error: " + err);
-    });
-});
+app.get(
+  "/movies",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    await Movies.find()
+      .then((movies) => {
+        res.status(201).json(movies);
+      })
+      .catch((error) => {
+        console.error(error);
+        res.status(500).send("Error: " + error);
+      });
+  }
+);
 
 // Gets the list of data about ALL Users
 app.get("/users", (req, res) => {
@@ -141,27 +153,36 @@ app.get("/users/:Username", async (req, res) => {
   (required)
   Birthday: Date
 }*/
-app.put("/users/:Username", async (req, res) => {
-  await Users.findOneAndUpdate(
-    { Username: req.params.Username },
-    {
-      $set: {
-        Username: req.body.Username,
-        Password: req.body.Password,
-        Email: req.body.Email,
-        Birthday: req.body.Birthday,
+app.put(
+  "/users/:Username",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    // CONDITION TO CHECK ADDED HERE
+    if (req.user.Username !== req.params.Username) {
+      return res.status(400).send("Permission denied");
+    }
+    // CONDITION ENDS
+    await Users.findOneAndUpdate(
+      { Username: req.params.Username },
+      {
+        $set: {
+          Username: req.body.Username,
+          Password: req.body.Password,
+          Email: req.body.Email,
+          Birthday: req.body.Birthday,
+        },
       },
-    },
-    { new: true }
-  ) // This line makes sure that the updated document is returned
-    .then((updatedUser) => {
-      res.json(updatedUser);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send("Error:" + err);
-    });
-});
+      { new: true }
+    ) // This line makes sure that the updated document is returned
+      .then((updatedUser) => {
+        res.json(updatedUser);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).send("Error: " + err);
+      });
+  }
+);
 
 // Add a movie to a user's list of favorites
 app.post("/users/:Username/movies/:MovieID", async (req, res) => {
