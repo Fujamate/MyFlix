@@ -12,10 +12,15 @@ const app = express();
 const cors = require("cors");
 app.use(cors());
 
-mongoose.connect("mongodb://127.0.0.1:27017/myFlix", {
+mongoose.connect("process.env.CONNECTION_URI", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
+
+/* mongoose.connect("mongodb://127.0.0.1:27017/myFlix", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+}); */
 
 app.use(express.json());
 
