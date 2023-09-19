@@ -41,7 +41,7 @@ require("./passport");
 // Gets the list of data about ALL Movies
 app.get(
   "/movies",
-  passport.authenticate("jwt", { session: false }),
+  //passport.authenticate("jwt", { session: false }),
   async (req, res) => {
     await Movies.find()
       .then((movies) => {
