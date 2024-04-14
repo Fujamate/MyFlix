@@ -38,7 +38,17 @@ let auth = require("./auth")(app);
 const passport = require("passport");
 require("./passport");
 
-// Gets the list of data about ALL Movies
+/**
+ * Route handler for getting the list of all movies.
+ * @name GET /movies
+ * @function
+ * @memberof module:app
+ * @inner
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Array} - List of movies in JSON format
+ */
+
 app.get(
   "/movies",
   passport.authenticate("jwt", { session: false }),
@@ -54,7 +64,17 @@ app.get(
   }
 );
 
-// Gets the list of data about ALL Users
+/**
+ * Route handler for getting the list of data about ALL Users
+ * @name GET /users
+ * @function
+ * @memberof module:app
+ * @inner
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Array} - List of movies in JSON format
+ */
+
 app.get("/users", (req, res) => {
   Users.find()
     .then((users) => {
@@ -65,9 +85,18 @@ app.get("/users", (req, res) => {
       res.status(500).send("Error: " + err);
     });
 });
-// still a bug below
 
-// Gets the data about a single movie, by title
+/**
+ * Route handler for getting the data about a single movie, by title
+ * @name GET /movies/:Title
+ * @function
+ * @memberof module:app
+ * @inner
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Array} - List of movies in JSON format
+ */
+
 app.get("/movies/:Title", async (req, res) => {
   await Movies.findOne({ Title: req.params.Title })
     .then((movie) => {
@@ -84,7 +113,17 @@ app.get("/movies/:Title", async (req, res) => {
     });
 });
 
-// Get data about a genre by genre's name
+/**
+ * Route handler for getting the data about a genre by genre's name
+ * @name GET /movies/genre/:genreName
+ * @function
+ * @memberof module:app
+ * @inner
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Array} - List of movies in JSON format
+ */
+
 app.get("/movies/genre/:genreName", async (req, res) => {
   await Movies.find({ "Genre.Name": req.params.genreName })
     .then((movies) => {
@@ -96,7 +135,17 @@ app.get("/movies/genre/:genreName", async (req, res) => {
     });
 });
 
-// Get data about a director by director's name
+/**
+ * Route handler for getting the data about a director by director's name
+ * @name GET /movies/directors/:directorName
+ * @function
+ * @memberof module:app
+ * @inner
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Array} - List of movies in JSON format
+ */
+
 app.get("/movies/directors/:directorName", async (req, res) => {
   await Movies.findOne({ "Director.Name": req.params.directorName }).then(
     (directors) => {
